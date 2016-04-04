@@ -1,6 +1,6 @@
 ﻿#pragma strict
 
-import UnityEngine;
+//import UnityEngine;
 
 @script RequireComponent(Rigidbody)
 @script RequireComponent(CapsuleCollider)

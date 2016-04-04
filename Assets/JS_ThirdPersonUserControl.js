@@ -1,20 +1,21 @@
 ﻿#pragma strict
 
 import System;
-import UnityEngine;
+//import UnityEngine;
+//import UnityStandardAssets.Characters.ThirdPerson;
 import UnityStandardAssets.CrossPlatformInput;
-import UnityStandardAssets.Characters.ThirdPerson;
-
-@script RequireComponent(JS_TPC)
-
-private var character : ThirdPersonCharacter; // a reference to the tpc on the object
-private var cam : Transform; //a reference to the main camera in the scenes transform
-private var camFwd : Vector3; //the current forward direction of the camera
-private var move : Vector3;
-private var jump : boolean; // the world relative desired move direction, calculated from the camfwd and user input
 
 
-private function Start () {
+@script RequireComponent(JS_ThirdPersonCharacter)
+
+var character : JS_ThirdPersonCharacter; // a reference to the tpc on the object
+var cam : Transform; //a reference to the main camera in the scenes transform
+var camFwd : Vector3; //the current forward direction of the camera
+var move : Vector3;
+var jump : boolean; // the world relative desired move direction, calculated from the camfwd and user input
+
+
+public function Start () {
 	//get the transform of the main camera
 	if(Camera.main != null){
 
@@ -26,10 +27,11 @@ private function Start () {
 	}
 
 	//get the tpc ( thisshould never be null due to require component)
-	character = GetComponent.<ThirdPersonCharacter>();
+	character = GetComponent.<JS_ThirdPersonCharacter>();
+
 }
 
-private function Update () {
+public function Update () {
 
 	if(!jump){
 
@@ -39,7 +41,9 @@ private function Update () {
 }
 
 //fixed update is called in synch with physics
-private function FixedUpdate(){
+public function FixedUpdate(){
+
+	Debug.Log("run");
 	//read inputs
 	var h : float = CrossPlatformInputManager.GetAxis("Horizontal");
 	var v : float = CrossPlatformInputManager.GetAxis("Vertical");
@@ -60,10 +64,11 @@ private function FixedUpdate(){
 	#if !MOBILE_INPUT
 	//walk speed multiplier
 
-	if(Input.GetKey(KeyCode.LeftShift)) move *= 0.5;
+		if(Input.GetKey(KeyCode.LeftShift)) move *= 0.5;
 	#endif
 
 	//pass all parameters to the character control script
+	
 	character.Move(move, crouch, jump);
 	jump = false;
 }
