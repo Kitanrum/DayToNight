@@ -1,6 +1,7 @@
 ﻿#pragma strict
 
-//import UnityEngine;
+import UnityEngine;
+import UnityStandardAssets.Characters.ThirdPerson;
 
 @script RequireComponent(Rigidbody)
 @script RequireComponent(CapsuleCollider)
@@ -8,25 +9,25 @@
 
 @SerializeField private var movingTurnSpeed : float = 360; //var turn angle walk
 @SerializeField private var stationaryTurnSpeed : float = 180; //var turn angle still
-@SerializeField private var jumpPower : float = 12; //jump height
-@SerializeField private var gravityMultiplier : float = 2; //Gravity
+@SerializeField private var jumpPower : float = 6; //jump height
+@Range(1,4) @SerializeField private var gravityMultiplier : float = 2; //Gravity
 @SerializeField private var runCycleLegOffset : float = 0.2; //specific to the character in sample assets, will need to be modified to work with others.
 @SerializeField private var moveSpeedMultiplier : float = 1; //walk speed
 @SerializeField private var animSpeedMultiplier : float = 1;
-@SerializeField private var groundCheckDistance : float = 0.1;
+@SerializeField private var groundCheckDistance : float = 0.3;
 
-var rb : Rigidbody;
-var anim : Animator;
-var isGrounded : boolean;
-var origGroundCheckDistance: float;
-var half : float = 0.5;
-var turnAmount : float;
-var forwardAmount : float;
-var groundNormal : Vector3;
-var capsuleHeight : float;
-var capsuleCenter : Vector3;
-var capsule : CapsuleCollider;
-var crouching : boolean;
+private var rb : Rigidbody;
+private var anim : Animator;
+private var isGrounded : boolean;
+private var origGroundCheckDistance: float;
+private var half : float = 0.5;
+private var turnAmount : float;
+private var forwardAmount : float;
+private var groundNormal : Vector3;
+private var capsuleHeight : float;
+private var capsuleCenter : Vector3;
+private var capsule : CapsuleCollider;
+private var crouching : boolean;
 
 function Start () {
 
@@ -45,7 +46,6 @@ function Move (move : Vector3, crouch : boolean, jump : boolean) {
 
 	//convert the world relative moveInput vector into a local-relative
 	//turn amount and forward amount required to head in the desired direction
-
 	if(move.magnitude > 1)move.Normalize(); //change length of vector if too long
 	move = transform.InverseTransformDirection(move); //world fwd = local space
 	CheckGroundStatus(); //call this function
@@ -64,7 +64,7 @@ function Move (move : Vector3, crouch : boolean, jump : boolean) {
 		HandleAirborneMovement();
 	}
 
-	ScaleCapsuleForCrouching(capsule);
+	ScaleCapsuleForCrouching(crouch);
 	PreventStandingInLowHeadroom();
 
 	//send input and other state parameters to the animator
@@ -132,8 +132,10 @@ function UpdateAnimator(move : Vector3){
 	//(This code is reliant on the specific run cycle offset in our animations,
 	//and assumes on leg passes the other at the normalized clip times of 0.0 and 0.5)
 
-	var runCycle : float = Mathf.Repeat(anim.GetCurrentAnimatorStateInfo(0).normalizedTime + runCycleLegOffset, 1);
-	var jumpLeg : float = (runCycle < half?1: -1)* forwardAmount;
+	var runCycle : float = 
+		Mathf.Repeat(
+			anim.GetCurrentAnimatorStateInfo(0).normalizedTime + runCycleLegOffset, 1);
+	var jumpLeg : float = (runCycle < half ? 1 : -1)* forwardAmount;
 
 	if(isGrounded){
 		anim.SetFloat("JumpLeg", jumpLeg);
@@ -167,7 +169,7 @@ function HandleGroundedMovement(crouch : boolean, jump : boolean){
 	if(jump && !crouch && anim.GetCurrentAnimatorStateInfo(0).IsName("Grounded")){
 
 		//jump
-		rb.velocity = new Vector3(rb.velocity.x, jumpPower, rb.velocity.x);
+		rb.velocity = new Vector3(rb.velocity.x, jumpPower, rb.velocity.z);
 		isGrounded = false;
 		anim.applyRootMotion = false;
 		groundCheckDistance = 0.1;
@@ -213,10 +215,12 @@ function CheckGroundStatus(){
 		groundNormal = hitInfo.normal;
 		isGrounded = true;
 		anim.applyRootMotion = true;
+		
 	}
 	else {
 		isGrounded = false;
 		groundNormal = Vector3.up;
 		anim.applyRootMotion = false;
+		Debug.Log("Poopy");
 	}
 }

@@ -1,18 +1,18 @@
 ﻿#pragma strict
 
 import System;
-//import UnityEngine;
-//import UnityStandardAssets.Characters.ThirdPerson;
+import UnityEngine;
+import UnityStandardAssets.Characters.ThirdPerson;
 import UnityStandardAssets.CrossPlatformInput;
 
 
 @script RequireComponent(JS_ThirdPersonCharacter)
 
-var character : JS_ThirdPersonCharacter; // a reference to the tpc on the object
-var cam : Transform; //a reference to the main camera in the scenes transform
-var camFwd : Vector3; //the current forward direction of the camera
-var move : Vector3;
-var jump : boolean; // the world relative desired move direction, calculated from the camfwd and user input
+private var character : JS_ThirdPersonCharacter; // a reference to the tpc on the object
+private var cam : Transform; //a reference to the main camera in the scenes transform
+private var camFwd : Vector3; //the current forward direction of the camera
+private var move : Vector3;
+private var jump : boolean; // the world relative desired move direction, calculated from the camfwd and user input
 
 
 public function Start () {
